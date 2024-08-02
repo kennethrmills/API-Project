@@ -9,12 +9,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.Properties;
 
 public class WeatherProject {
-    private static final String API_KEY = "b85f35ff615f477c8dc203944240208";
+    
     private static final String BASE_URL = "http://api.weatherapi.com/v1/current.json";
 
     public static void main(String[] args) {
@@ -29,6 +31,14 @@ public class WeatherProject {
     }
 
     private static String getWeatherData(String city) {
+        Properties properties = new Properties();
+        try(FileInputStream input = new FileInputStream("config.properties")){
+            properties.load(input);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        final String API_KEY = properties.getProperty("apiKey");
         String url = BASE_URL + "?key=" + API_KEY + "&q=" + city;
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(url);
